@@ -6,7 +6,6 @@
     <title>Login Kunjungan Industri</title>
     <link rel="icon" href="{{ asset('assets/foto/logo.png') }}" />
     <link rel="stylesheet" href="{{asset('assets/css/bootstrap.min.css')}}">
-
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -22,19 +21,19 @@
       }
       .container {
         display: flex;
-        flex-direction: column;
+        flex-direction: column; /* Default untuk mobile */
         background: white;
         border-radius: 10px;
         overflow: hidden;
         box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
         width: 100%;
+        max-width: 1250px; /* Batas maksimal untuk PC */
       }
       .image-section {
         background: url('{{ asset('assets/foto/mountain_3.jpg') }}') no-repeat center;
         background-size: cover;
-        height: 600px;
-        width: 700px;
-        margin-left: -20px;
+        height: 300px; /* Ukuran lebih kecil untuk mobile */
+        width: 100%; /* Lebar penuh pada mobile */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -44,7 +43,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        margin-left: 10px;
+        width: 100%; /* Lebar penuh pada mobile */
       }
       .form-section .logo {
         text-align: center;
@@ -64,22 +63,44 @@
         background: #003973;
         color: white;
       }
+
+      /* Media Query untuk Tablet dan PC (min-width: 768px) */
       @media (min-width: 768px) {
         .container {
-          flex-direction: row;
-          height: 600px;
+          flex-direction: row; /* Berdampingan untuk PC */
+          height: 600px; /* Tinggi tetap seperti desain PC */
         }
         .image-section {
-          width: 85%;
-          height: 100%;
+          width: 700px; /* Lebar tetap seperti desain PC */
+          height: 100%; /* Mengisi tinggi kontainer */
           margin-left: -20px;
         }
         .form-section {
-          width: 50%;
+          width: 50%; /* Lebar form pada PC */
           padding: 40px;
+          margin-left: 10px;
         }
         .form-section h2 {
           font-size: 36px;
+        }
+      }
+
+      /* Media Query untuk Mobile (max-width: 767px) */
+      @media (max-width: 767px) {
+        .image-section {
+          display: none; /* Sembunyikan gambar pada mobile */
+          height: 200px; /* Ukuran gambar lebih kecil pada mobile */
+        }
+        
+        .form-section {
+          height: 100vh; /* Tinggi penuh pada mobile */
+          padding: 10px; /* Padding lebih kecil pada mobile */
+        }
+        .form-section h2 {
+          font-size: 28px; /* Judul lebih kecil pada mobile */
+        }
+        .form-section .logo img {
+          max-width: 50px; /* Logo lebih kecil pada mobile */
         }
       }
     </style>
