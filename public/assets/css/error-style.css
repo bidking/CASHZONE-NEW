@@ -1,0 +1,42 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.error-container {
+    max-width: 600px;
+    width: 100%;
+}
+
+.error-image {
+    margin: 0px 20px;
+    max-width: 90%;
+    height: auto;
+}
+
+ span.code{
+    color: rgba(233, 84, 32, 1);
+    font-size: 70px;
+}
+h1{
+    color: #772953;
+}
+p {
+    color: #343a40;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
