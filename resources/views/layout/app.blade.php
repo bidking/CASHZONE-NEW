@@ -246,7 +246,7 @@ border: 1px solid rgba(255, 255, 255, 0.125)!important;
     <div class="sidebar d-md-block" id="sidebar">
         <div class="position-sticky pt-1">
             <div class="d-flex align-items-center px-3 py-2 mt-2">
-                <img src="{{asset('assets/foto/logo.png')}}" alt="Logo" style="width: 50px; height: 50px; margin-right: 10px;">
+                <img src="{{asset('assets/foto/logo_6.png')}}" alt="Logo" style="width: 50px; height: 50px; margin-right: 10px;">
                 <h2>Cash<span>Zone</span></h2>
             </div>
             <ul class="nav flex-column px-3">

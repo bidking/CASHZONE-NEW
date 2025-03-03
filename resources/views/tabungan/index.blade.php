@@ -155,7 +155,12 @@
     .modal-content {  
       background-color: #1e1e2d !important;
     }
- 
+    @media (max-width: 768px) {
+  .table-responsive {
+    display: none;
+  }
+}
+
 </style>
 
 
@@ -382,7 +387,7 @@
         @foreach($tabungans as $tabungan)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>
+                <td><span class="badge bg-dark text-white">     
                     <a href="#"
                        data-bs-toggle="modal"
                        data-bs-target="#detailModal"
@@ -392,23 +397,20 @@
                        data-walas="{{ $tabungan->walas }}">
                         {{ $tabungan->name }}
                     </a>
+</span>
                 </td>
                 <td>
                     <a href="https://wa.me/{{ $tabungan->whatsapp_number }}" target="_blank">
                         {{ $tabungan->no_telpon }}
                     </a>
                 </td>
-                <td>{{ $tabungan->acara->nama_acara ?? 'Data Acara telah dihapus' }}</td>
-                <td>{{ $tabungan->acara->tanggal_acara ?? '-' }}</td>
-                <td>
-                    {{ isset($tabungan->acara->jumlah_bayar) ? number_format($tabungan->acara->jumlah_bayar, 0, ',', '.') : '-' }}
-                </td>
+                <td ><span class="badge bg-primary"> {{ $tabungan->acara->nama_acara ?? 'Data Acara telah dihapus' }} </span></td>
+                <td><span class="badge bg-primary"> {{ $tabungan->acara->tanggal_acara ?? '-' }} </span></td>
+                <td><span class="badge bg-danger">   {{ isset($tabungan->acara->jumlah_bayar) ? number_format($tabungan->acara->jumlah_bayar, 0, ',', '.') : '-' }} </span> </td>
                 <!-- <td>{{ $tabungan->total_masuk }}</td> -->
-                <td>
-    {{ number_format(App\Models\Tabungan::where('name', $tabungan->name)->sum('total_masuk'), 0, ',', '.') }}
-</td>
+                <td><span class="badge bg-success"> {{ number_format(App\Models\Tabungan::where('name', $tabungan->name)->sum('total_masuk'), 0, ',', '.') }} </span></td>
 
-<td>
+<td><span class="badge bg-warning">  
     @php
         // Ambil jumlah bayar dari relasi acara, jika ada
         $jumlahBayar = isset($tabungan->acara->jumlah_bayar) ? $tabungan->acara->jumlah_bayar : 0;
@@ -418,6 +420,7 @@
         $tagihan = $jumlahBayar - $totalMasuk;
     @endphp
     {{ number_format($tagihan, 0, ',', '.') }}
+    </span>
 </td>
 
                
@@ -449,6 +452,144 @@
         </div>
     </div>
 </div>
+
+
+<!-- Tampilan Mobile (Card View) -->
+<div class="mobile-view d-block d-md-none mt-4">
+  @forelse ($tabungans as $tabungan)
+    <div class="mobile-card" style="border:1px solid white; border-radius:10px; padding:10px; margin-bottom:15px;">
+      <div class="row mb-2">
+        <div class="col-4"><strong>Nama:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-dark text-white">{{ $tabungan->name }}</span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>ID:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-secondary">{{ $loop->iteration }}</span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>No Telpon:</strong></div>
+        <div class="col-8">
+          <a href="https://wa.me/{{ $tabungan->whatsapp_number }}" target="_blank">
+            <span class="badge bg-info">{{ $tabungan->no_telpon }}</span>
+          </a>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>Nama Acara:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-primary">
+            {{ $tabungan->acara->nama_acara ?? 'Data Acara telah dihapus' }}
+          </span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>Tanggal Acara:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-light">
+            {{ $tabungan->acara->tanggal_acara ?? '-' }}
+          </span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>Jumlah Bayar:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-success">
+            {{ isset($tabungan->acara->jumlah_bayar) ? number_format($tabungan->acara->jumlah_bayar, 0, ',', '.') : '-' }}
+          </span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>Total Masuk:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-warning">
+            {{ number_format($tabungan->total_masuk, 0, ',', '.') }}
+          </span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>Tagihan:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-danger">
+            {{ number_format($tabungan->tagihan, 0, ',', '.') }}
+          </span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>Tanggal:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-secondary">
+            {{ $tabungan->updated_at->setTimezone('Asia/Jakarta')->format('d/m/Y H:i:s') }}
+          </span>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-4"><strong>Bukti:</strong></div>
+        <div class="col-8">
+          @if($tabungan->tipe_pembayaran == 'transfer')
+            @if($tabungan->image)
+              <a href="#"
+                 data-bs-toggle="modal"
+                 data-bs-target="#imageModal"
+                 data-image="{{ asset('uploads/transfer/' . $tabungan->image) }}">
+                <img src="{{ asset('uploads/transfer/' . $tabungan->image) }}" alt="Bukti Pembayaran" style="width:100px">
+              </a>
+            @else
+              <span class="badge bg-secondary">Tidak ada bukti transfer</span>
+            @endif
+          @else
+            <span class="badge bg-success">Pembayaran cash <br>(tidak perlu bukti)</span>
+          @endif
+        </div>
+      </div>
+      <!-- Tombol Aksi -->
+      <div class="mt-2">
+        <button class="btn btn-edit btn-sm">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button type="button" class="btn btn-delete btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $tabungan->id }}" data-url="{{ route('tabungan.destroy', $tabungan->id) }}" data-name="{{ $tabungan->name }}">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Delete Mobile (gunakan modal delete yang sama dengan tampilan desktop jika diperlukan) -->
+    <div class="modal fade" id="deleteModal{{ $tabungan->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $tabungan->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel{{ $tabungan->id }}">Konfirmasi Hapus</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+          </div>
+          <div class="modal-body">
+            Yakin ingin menghapus data dari <strong>{{ $tabungan->name }}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <form action="{{ route('tabungan.destroy', $tabungan->id) }}" method="POST" style="display: inline;">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  @empty
+    <div class="mobile-card">
+      Data tidak ditemukan.
+    </div>
+  @endforelse
+
+  <!-- Pagination untuk tampilan mobile -->
+  <div class="d-flex justify-content-center">
+    {{ $tabungans->links() }}
+  </div>
+</div>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/driver.js/0.9.8/driver.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/driver.js/0.9.8/driver.min.js"></script>
 

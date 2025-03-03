@@ -9,7 +9,7 @@ class AuthenticateMiddleware
 {
     public function handle(Request $request, Closure $next, $status)
     {
-       
+
         if (session('status') !== $status) {
             return redirect('/')->withErrors(['error' => 'Akses ditolak.']);
         }

@@ -1,8 +1,7 @@
 @extends('layout.app')
 
-{{-- Jika layout.app belum memuat style tambahan, Anda bisa menambahkannya di sini --}}
-
 @section('content')
+<!-- Modal Bukti Pembayaran -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content bg-dark">
@@ -17,13 +16,13 @@
     </div>
 </div>
 
-<!-- Contoh modal delete -->
+<!-- Modal Konfirmasi Delete -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <form id="deleteForm" method="POST">
       @csrf
       @method('DELETE')
-      <div class="modal-content">
+      <div class="modal-content bg-dark text-white">
         <div class="modal-header">
           <h5 class="modal-title">Konfirmasi Hapus</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -40,11 +39,8 @@
   </div>
 </div>
 
-
-
-
 <div class="container my-3">
-    <!-- Baris Filter & Fungsi -->
+    <!-- Filter & Fungsi -->
     <h2>Riwayat Tabungan</h2>
     <div class="row g-3">
         <!-- Filter Tipe Pembayaran -->
@@ -59,7 +55,7 @@
             </form>
         </div>
 
-        <!-- Pengaturan Jumlah Data per Halaman & Pencarian Keyword -->
+        <!-- Pengaturan Jumlah Data per Halaman & Pencarian -->
         <div class="col-12 col-md-4">
             <form method="GET" action="{{ route('tabungan.riwayat') }}" class="d-flex align-items-center">
                 <select class="form-select w-auto" name="perPage">
@@ -86,12 +82,12 @@
         </div>
     </div>
 
-    <!-- Tabel Data -->
-    <div class="table-responsive mt-4">
+    <!-- Tampilan Desktop: Tabel (hanya untuk layar md ke atas) -->
+    <div class="table-responsive mt-4 d-none d-md-block">
         <table class="table table-dark table-hover align-middle">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>No</th>
                     <th>Nama</th>
                     <th>No Telpon</th>
                     <th>Nama Acara</th>
@@ -106,87 +102,223 @@
             </thead>
             <tbody>
                 @foreach($tabungans as $tabungan)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $tabungan->name }}</td>
-                        <td>
-                            <a href="https://wa.me/{{ $tabungan->whatsapp_number }}" target="_blank">
-                                {{ $tabungan->no_telpon }}
-                            </a>
-                        </td>
-                        <td>{{ $tabungan->acara->nama_acara ?? 'Data Acara telah dihapus' }}</td>
-                        <td>{{ $tabungan->acara->tanggal_acara ?? '-' }}</td>
-                        <td>
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $tabungan->name }}</td>
+                    <td>
+                        <a href="https://wa.me/{{ $tabungan->whatsapp_number }}" target="_blank">
+                            <span class="">{{ $tabungan->no_telpon }}</span>
+                        </a>
+                    </td>
+                    <td><span class="">{{ $tabungan->acara->nama_acara ?? 'Data Acara telah dihapus' }}</span></td>
+                    <td>{{ $tabungan->acara->tanggal_acara ?? '-' }}</td>
+                    <td>
+                        <span class="badge bg-danger">
                             {{ isset($tabungan->acara->jumlah_bayar) ? number_format($tabungan->acara->jumlah_bayar, 0, ',', '.') : '-' }}
-                        </td>
-                        <td>{{ number_format($tabungan->total_masuk, 0, ',', '.') }}</td>
-                        <td>{{ number_format($tabungan->tagihan, 0, ',', '.') }}</td>
-                        <td>
-                            @if($tabungan->tipe_pembayaran == 'transfer')
-                                @if($tabungan->image)
-                                    <a href="#"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#imageModal"
-                                       data-image="{{ asset('uploads/transfer/' . $tabungan->image) }}">
-                                        <img src="{{ asset('uploads/transfer/' . $tabungan->image) }}" alt="Bukti Pembayaran" style="width:100px">
-                                    </a>
-                                @else
-                                    Tidak ada bukti transfer
-                                @endif
+                        </span>
+                    </td>
+                    <td><span class="badge bg-success">{{ number_format($tabungan->total_masuk, 0, ',', '.') }}</span></td>
+                    <td><span class="badge bg-warning">{{ number_format($tabungan->tagihan, 0, ',', '.') }}</span></td>
+                    <td>
+                        @if($tabungan->tipe_pembayaran == 'transfer')
+                            @if($tabungan->image)
+                                <a href="#"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#imageModal"
+                                   data-image="{{ asset('uploads/transfer/' . $tabungan->image) }}">
+                                    <img src="{{ asset('uploads/transfer/' . $tabungan->image) }}" alt="Bukti Pembayaran" style="width:100px">
+                                </a>
                             @else
-                                Pembayaran cash (tidak perlu bukti)
+                                <span class="badge bg-secondary">Tidak ada bukti transfer</span>
                             @endif
-                        </td>
-                        <td>{{ $tabungan->updated_at->setTimezone('Asia/Jakarta')->format('d/m/Y H:i:s') }}</td>
-                        <td>
-                            <button class="btn btn-edit btn-sm">✏</button>
-                            <button type="button"
-        class="btn btn-delete btn-sm"
-        data-bs-toggle="modal"
-        data-bs-target="#deleteModal"
-        data-url="{{ route('tabungan.destroyRiwayat', $tabungan->id) }}"
-        data-name="{{ $tabungan->name }}">
-    🗑
-</button>
-
-                        </td>
-                    </tr>
+                        @else
+                            <span class="badge bg-success">Pembayaran cash <br>(tidak perlu bukti)</span>
+                        @endif
+                    </td>
+                    <td><span class="">{{ $tabungan->updated_at->setTimezone('Asia/Jakarta')->format('d/m/Y H:i:s') }}</span></td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-delete btn-sm bg-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-url="{{ route('tabungan.destroyRiwayat', $tabungan->id) }}"
+                                data-name="{{ $tabungan->name }}">
+                            🗑
+                        </button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
-
-        <!-- Tampilkan Pagination jika ada -->
+        <!-- Pagination -->
         <div class="d-flex justify-content-end">
-            {{ $tabungans->links() }}
+            {{ $tabungans->links('vendor.pagination.custom') }}
         </div>
     </div>
+
+ <!-- Tampilan Mobile (List Card) -->
+<div class="mobile-view mt-4 d-md-none">
+  @forelse ($tabungans as $tabungan)
+    <div class="mobile-card mt-3" style="border:1px solid white; border-radius:10px; padding: 10px;">
+      <!-- Baris 1: Nama -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Nama:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-primary">{{ $tabungan->name }}</span>
+        </div>
+      </div>
+      <!-- Baris 2: ID -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>ID:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-secondary">{{ $loop->iteration }}</span>
+        </div>
+      </div>
+      <!-- Baris 3: No Telpon -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>No Telpon:</strong></div>
+        <div class="col-8">
+          <a href="https://wa.me/{{ $tabungan->whatsapp_number }}" target="_blank">
+            <span class="badge bg-info">{{ $tabungan->no_telpon }}</span>
+          </a>
+        </div>
+      </div>
+      <!-- Baris 4: Nama Acara -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Nama Acara:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-primary">
+            {{ $tabungan->acara->nama_acara ?? 'Data Acara telah dihapus' }}
+          </span>
+        </div>
+      </div>
+      <!-- Baris 5: Tanggal Acara -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Tanggal Acara:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-light">
+            {{ $tabungan->acara->tanggal_acara ?? '-' }}
+          </span>
+        </div>
+      </div>
+      <!-- Baris 6: Jumlah Bayar -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Jumlah Bayar:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-success">
+            {{ isset($tabungan->acara->jumlah_bayar) ? number_format($tabungan->acara->jumlah_bayar, 0, ',', '.') : '-' }}
+          </span>
+        </div>
+      </div>
+      <!-- Baris 7: Total Masuk -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Total Masuk:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-warning">
+            {{ number_format($tabungan->total_masuk, 0, ',', '.') }}
+          </span>
+        </div>
+      </div>
+      <!-- Baris 8: Tagihan -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Tagihan:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-danger">
+            {{ number_format($tabungan->tagihan, 0, ',', '.') }}
+          </span>
+        </div>
+      </div>
+      <!-- Baris 9: Tanggal -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Tanggal:</strong></div>
+        <div class="col-8">
+          <span class="badge bg-secondary">
+            {{ $tabungan->updated_at->setTimezone('Asia/Jakarta')->format('d/m/Y H:i:s') }}
+          </span>
+        </div>
+      </div>
+      <!-- Baris 10: Bukti -->
+      <div class="row mb-2">
+        <div class="col-4"><strong>Bukti:</strong></div>
+        <div class="col-8">
+          @if($tabungan->tipe_pembayaran == 'transfer')
+            @if($tabungan->image)
+              <a href="#"
+                 data-bs-toggle="modal"
+                 data-bs-target="#imageModal"
+                 data-image="{{ asset('uploads/transfer/' . $tabungan->image) }}">
+                <img src="{{ asset('uploads/transfer/' . $tabungan->image) }}" alt="Bukti Pembayaran" style="width:100px">
+              </a>
+            @else
+              <span class="badge bg-secondary">Tidak ada bukti transfer</span>
+            @endif
+          @else
+            <span class="badge bg-success">Pembayaran cash <br> (tidak perlu bukti)</span>
+          @endif
+        </div>
+      </div>
+      <!-- Tombol Delete -->
+      <div class="mt-2">
+        <button type="button" class="btn btn-delete btn-sm bg-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $tabungan->id }}" data-url="{{ route('tabungan.destroyRiwayat', $tabungan->id) }}" data-name="{{ $tabungan->name }}">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Delete Mobile -->
+    <div class="modal fade" id="deleteModal{{ $tabungan->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $tabungan->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel{{ $tabungan->id }}">Konfirmasi Hapus</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Yakin ingin menghapus data dari <strong>{{ $tabungan->name }}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <form action="{{ route('tabungan.destroyRiwayat', $tabungan->id) }}" method="POST" style="display: inline;">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  @empty
+    <div class="mobile-card">
+      Data tidak ditemukan.
+    </div>
+  @endforelse
+
+  <!-- Pagination pada tampilan mobile -->
+  <div class="d-flex justify-content-center">
+    {{ $tabungans->links() }}
+  </div>
 </div>
 
 
 <script>
-    
+    // Modal untuk bukti pembayaran
     var imageModal = document.getElementById('imageModal');
     imageModal.addEventListener('show.bs.modal', function (event) {
-        // Dapatkan elemen yang memicu modal
         var triggerElement = event.relatedTarget;
-        // Ambil URL gambar dari data attribute
         var imageSrc = triggerElement.getAttribute('data-image');
-        // Set URL tersebut ke elemen <img> di modal
         var modalImage = document.getElementById('modalImage');
         modalImage.src = imageSrc;
     });
 
-
-     // Mengisi form delete dengan URL dan nama data
-  var deleteModal = document.getElementById('deleteModal');
-  deleteModal.addEventListener('show.bs.modal', function (event) {
-      var button = event.relatedTarget;
-      var url = button.getAttribute('data-url');
-      var name = button.getAttribute('data-name');
-      
-      var form = document.getElementById('deleteForm');
-      form.action = url;
-      document.getElementById('deleteName').textContent = name;
-  });
+    // Modal untuk konfirmasi delete
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var url = button.getAttribute('data-url');
+        var name = button.getAttribute('data-name');
+        var form = document.getElementById('deleteForm');
+        form.action = url;
+        document.getElementById('deleteName').textContent = name;
+    });
 </script>
 @endsection

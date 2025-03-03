@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Guru;
 use App\Models\Siswa;
 use App\Models\Tabungan;
+use App\Models\Acara;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -22,6 +23,8 @@ class DashboardController extends Controller
     
         // Card Pelajar: Hitung seluruh siswa
         $totalPelajar = Siswa::count();
+        $totalguru = Guru::count();
+        $totalacara = Acara::count();
     
         // Card Jumlah Bayar: Jumlahkan kolom total_masuk pada tabel tabungans
         $totalJumlahBayar = Tabungan::sum('total_masuk');
@@ -54,7 +57,9 @@ class DashboardController extends Controller
             'chartLabels',
             'chartValues',
             'maleCount',
-            'femaleCount'
+            'femaleCount',
+            'totalguru',
+            'totalacara',
         ));
     }
 }

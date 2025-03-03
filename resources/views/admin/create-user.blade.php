@@ -341,7 +341,8 @@
                 </div>
             @endif
 
-            <button type="submit" class="btn btn-dark mt-2">Register</button>
+            <button type="submit" class="btn btn-secondary mt-2">add acount</button>
+            <a href="{{ route('admin.users.list') }}" class="btn btn-secondary mt-2">Kembali</a>
         </form>
     </div>
 </div>

@@ -124,7 +124,12 @@
                     </div>
                     
                     <!-- Field 3: Tanggal Acara -->
-                    <div class="mb-3">
+                   
+                </div>
+                
+                <!-- Kolom Kanan: 3 Field -->
+                <div class="col-md-6">
+                <div class="mb-3">
                         <label class="form-label" for="tanggal_acara">Tanggal Acara</label>
                         <input type="date" name="tanggal_acara" id="tanggal_acara" class="form-control">
                     </div>
@@ -134,37 +139,8 @@
                         <label class="form-label" for="jumlah_bayar">Jumlah Bayar</label>
                         <input type="text" step="0.01" name="jumlah_bayar" id="jumlah_bayar" class="form-control" placeholder="Masukkan Jumlah Bayar">
                     </div>
-                </div>
-                
-                <!-- Kolom Kanan: 3 Field -->
-                <div class="col-md-6">
                     <!-- Field 1: Tipe Pembayaran -->
-                    <div class="mb-3">
-                        <label class="form-label" for="tipe_pembayaran">Tipe Pembayaran</label>
-                        <select name="tipe_pembayaran" id="tipe_pembayaran" class="form-control">
-                            <option value="">-- Pilih Tipe Pembayaran --</option>
-                            <option value="cash">Cash</option>
-                            <option value="tranfer">Tranfer</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Field 2: Total Masuk -->
-                    <div class="mb-3">
-                        <label class="form-label" for="total_masuk">Total Masuk</label>
-                        <input type="text" step="0.01" name="total_masuk" id="total_masuk" class="form-control" placeholder="Masukkan Total Masuk">
-                    </div>
-                    
-                    <!-- Field 3: Tagihan (readonly) -->
-                    <div class="mb-3">
-                        <label class="form-label" for="tagihan">Tagihan (Jumlah Bayar - Total Masuk)</label>
-                        <input type="text" step="0.01" name="tagihan" id="tagihan" class="form-control" readonly placeholder="Tagihan">
-                    </div>
-                    
-                    <!-- Field tambahan: Bukti Pembayaran (tampil jika tipe = tranfer) -->
-                    <div class="mb-3" id="buktiPembayaranContainer">
-                        <label class="form-label" for="image">Bukti Pembayaran</label>
-                        <input type="file" name="image" id="image" class="form-control" accept="image/*">
-                    </div>
+                  
                 </div>
             </div>
             
@@ -180,8 +156,13 @@
             <input type="hidden" name="kelas" id="kelas">
             <input type="hidden" name="walas" id="walas">
             <input type="hidden" name="gander" id="gander">
+            <input type="hidden" name="tipe_pembayaran" id="tipe_pembayaran">
+            <input type="hidden" name="total_masuk" id="total_masuk">
+            <input type="hidden" name="tagihan" id="tagihan">
             
             <button type="submit" class="btn btn-primary w-100 mt-3">Simpan</button>
+            <a href="{{ route('tabungan.index') }}" class="btn btn-secondary w-100 mt-3">Kembali</a>
+
         </form>
     </div>
 </div>

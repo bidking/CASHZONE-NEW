@@ -411,7 +411,6 @@ public function processApproved($id)
         'tagihan'         => $approved->tagihan,
         'tipe_pembayaran' => $approved->tipe_pembayaran,
     ];
-
     // Simpan data ke tabel tabungans
     Tabungan::create($data);
 

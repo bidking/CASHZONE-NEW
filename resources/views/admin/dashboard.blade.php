@@ -161,8 +161,8 @@
                             <div class="card-body">
                                 <i class="fa-solid fa-chalkboard-teacher"></i>
                                 <div>
-                                    <h5 class="card-title">Kelas</h5>
-                                    <p class="card-text">4</p>
+                                    <h5 class="card-title">guru</h5>
+                                    <p class="card-text">{{ $totalguru }}</p>
                                 </div>
                             </div>
                         </div>
@@ -172,8 +172,8 @@
                             <div class="card-body">
                                 <i class="fa-solid fa-book"></i>
                                 <div>
-                                    <h5 class="card-title">Jurusan</h5>
-                                    <p class="card-text">3</p>
+                                    <h5 class="card-title">acara</h5>
+                                    <p class="card-text">{{ $totalacara }}</p>
                                 </div>
                             </div>
                         </div>

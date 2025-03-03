@@ -8,6 +8,15 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/test-db', function () {
+    try {
+        \DB::connection()->getPdo();
+        return 'Database connected successfully';
+    } catch (\Exception $e) {
+        return 'Database connection failed: ' . $e->getMessage();
+    }
+});
+
 Route::get('/users/fetch', [UserController::class, 'fetchUsers'])->name('users.fetch');
 
 // Route untuk Login
@@ -74,6 +83,8 @@ Route::middleware('auth.status:admin')->group(function () {
 // Route untuk Guru 
 Route::middleware('auth.status:guru')->group(function () {
     Route::get('/guru/dashboard', [GuruController::class, 'index'])->name('guru.dashboard');
+    Route::post('/guru/updateProfile', [GuruController::class, 'updateProfile'])->name('guru.updateProfile');
+
 });
 
 // Route untuk Siswa

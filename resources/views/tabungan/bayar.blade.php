@@ -169,7 +169,9 @@
             <input type="hidden" name="total_masuk" id="new_total_masuk">
             <input type="hidden" name="tagihan" id="new_tagihan">
             
-            <button type="submit" class="btn btn-register w-100">Bayar</button>
+            <button type="submit" class="btn btn-register w-100 mt-2">Bayar</button>
+            <a href="{{ route('tabungan.index') }}" class="btn btn-secondary w-100 mt-2">Kembali</a>
+
         </form>
     </div>
 </div>

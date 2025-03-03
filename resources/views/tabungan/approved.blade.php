@@ -162,184 +162,241 @@
                 <th>Aksi</th>
               </tr>
             </thead>
-            <tbody>
-              @forelse ($approveds as $approved)
-                <tr>
-                  <td>{{ $loop->iteration }}</td>
-                  <td>{{ $approved->nisn }}</td>
-                  <td>{{ $approved->name }}</td>
-                  <td>{{ $approved->kelas }}</td>
-                  <td>{{ \Carbon\Carbon::parse($approved->tanggal_acara)->format('d/m/Y') }}</td>
-                  <td>Rp.{{ number_format($approved->jumlah_bayar, 0, ',', '.') }}</td>
-                  <td>Rp.{{ number_format($approved->total_masuk, 0, ',', '.') }}</td>
-                  <td>Rp.{{ number_format($approved->tagihan, 0, ',', '.') }}</td>
-                  <td>{{ $approved->created_at }}</td>
+          <tbody>
+    @forelse ($approveds as $approved)
+        <tr>
+            <td>{{ $loop->iteration }}</td>
+            <td><span class="badge bg-primary">{{ $approved->nisn }}</span></td>
+            <td><span class="badge bg-secondary">{{ $approved->name }}</span></td>
+            <td><span class="badge bg-info">{{ $approved->kelas }}</span></td>
+            <td><span class="badge bg-light">{{ \Carbon\Carbon::parse($approved->tanggal_acara)->format('d/m/Y') }}</span></td>
+            <td><span class="badge bg-success">Rp.{{ number_format($approved->jumlah_bayar, 0, ',', '.') }}</span></td>
+            <td><span class="badge bg-warning">Rp.{{ number_format($approved->total_masuk, 0, ',', '.') }}</span></td>
+            <td><span class="badge bg-danger">Rp.{{ number_format($approved->tagihan, 0, ',', '.') }}</span></td>
+            <td>{{ $approved->created_at->format('d/m/Y H:i:s') }}</td>
 
-                  <td>
-                    @if ($approved->tipe_pembayaran === 'cash')
-                      <span>Pembayaran Cash <br>(Tidak Perlu Memberikan Bukti)</span>
-                    @else
+            <td>
+                @if ($approved->tipe_pembayaran === 'cash')
+                    Pembayaran Cash <br>(Tidak Perlu Memberikan Bukti)
+                @else
                     <a href="#"
-            data-bs-toggle="modal"
-            data-bs-target="#imageModal"
-            data-image="{{ asset('uploads/transfer/' . $approved->image) }}">
-            <img src="{{ asset('uploads/transfer/' . $approved->image) }}" alt="Bukti Pembayaran" style="width:100px; height:100px;">
-            </a>
-                    @endif
-                  </td>
-                  <td>
-                    <!-- Tombol Approve Trigger Modal -->
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal{{ $approved->id }}">
-                      <i class="fas fa-check"></i>
-                    </button>
+                       data-bs-toggle="modal"
+                       data-bs-target="#imageModal"
+                       data-image="{{ asset('uploads/transfer/' . $approved->image) }}">
+                        <img src="{{ asset('uploads/transfer/' . $approved->image) }}" alt="Bukti Pembayaran" style="width:100px; height:100px;">
+                    </a>
+                @endif
+            </td>
 
-                    <!-- Modal Approve -->
-                    <div class="modal fade" id="approveModal{{ $approved->id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ $approved->id }}" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
+            <td>
+                <!-- Tombol Approve Trigger Modal -->
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal{{ $approved->id }}">
+                    <i class="fas fa-check"></i>
+                </button>
+
+                <!-- Modal Approve -->
+                <div class="modal fade" id="approveModal{{ $approved->id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ $approved->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content bg-dark text-white">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="approveModalLabel{{ $approved->id }}">Setujui Pembayaran?</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            Apakah Anda yakin ingin menyetujui pembayaran dari <strong>{{ $approved->name }}</strong>?
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <form action="{{ route('approved.process', $approved->id) }}" method="POST" style="display: inline;">
-                              @csrf
-                              <button type="submit" class="btn btn-success">Ya, Setujui</button>
-                            </form>
-                          </div>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="approveModalLabel{{ $approved->id }}">Setujui Pembayaran?</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Apakah Anda yakin ingin menyetujui pembayaran dari <strong>{{ $approved->name }}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <form action="{{ route('approved.process', $approved->id) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success">Ya, Setujui</button>
+                                </form>
+                            </div>
                         </div>
-                      </div>
                     </div>
+                </div>
 
-                    <!-- Tombol Reject Trigger Modal -->
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $approved->id }}">
-                      <i class="fas fa-times"></i>
-                    </button>
+                <!-- Tombol Reject Trigger Modal -->
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $approved->id }}">
+                    <i class="fas fa-times"></i>
+                </button>
 
-                    <!-- Modal Reject -->
-                    <div class="modal fade" id="rejectModal{{ $approved->id }}" tabindex="-1" aria-labelledby="rejectModalLabel{{ $approved->id }}" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
+                <!-- Modal Reject -->
+                <div class="modal fade" id="rejectModal{{ $approved->id }}" tabindex="-1" aria-labelledby="rejectModalLabel{{ $approved->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content bg-dark text-white">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="rejectModalLabel{{ $approved->id }}">Tolak Pembayaran</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            Apakah Anda yakin ingin menolak pembayaran dan menghapus data dari <strong>{{ $approved->name }}</strong>?
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <form action="{{ route('approved.reject', $approved->id) }}" method="POST" style="display: inline;">
-                              @csrf
-                              <button type="submit" class="btn btn-danger">Ya, Tolak</button>
-                            </form>
-                          </div>
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rejectModalLabel{{ $approved->id }}">Tolak Pembayaran</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Apakah Anda yakin ingin menolak pembayaran dan menghapus data dari <strong>{{ $approved->name }}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <form action="{{ route('approved.reject', $approved->id) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger">Ya, Tolak</button>
+                                </form>
+                            </div>
                         </div>
-                      </div>
                     </div>
-                  </td>
-                </tr>
-              @empty
-                <tr>
-                  <td colspan="9">Data tidak ditemukan.</td>
-                </tr>
-              @endforelse
-            </tbody>
+                </div>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="10" class="text-center">Data tidak ditemukan.</td>
+        </tr>
+    @endforelse
+</tbody>
+
           </table>
         </div>
       </div>
     </div>
 
-    <!-- Tampilan Mobile (List Card) -->
-    <div class="mobile-view">
-      @forelse ($approveds as $approved)
-        <div class="mobile-card">
-          <h5>{{ $approved->name }}</h5>
-          <p><strong>NISN:</strong> {{ $approved->nisn }}</p>
-          <p><strong>Kelas:</strong> {{ $approved->kelas }}</p>
-          <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($approved->tanggal_acara)->format('d/m/Y') }}</p>
-          <p><strong>Jumlah Pembayaran:</strong> Rp.{{ number_format($approved->jumlah_bayar, 0, ',', '.') }}</p>
-          <p><strong>Total Masuk:</strong> Rp.{{ number_format($approved->total_masuk, 0, ',', '.') }}</p>
-          <p><strong>Total tagihan:</strong> Rp.{{ number_format($approved->tagihan, 0, ',', '.') }}</p>
-          <p>
-            <strong>Bukti:</strong>
-            @if ($approved->tipe_pembayaran === 'cash')
-              <span>Pembayaran Cash <br>(Tidak Perlu Memberikan Bukti)</span>
-            @else
+   <!-- Tampilan Mobile (List Card) -->
+<div class="mobile-view">
+  @forelse ($approveds as $approved)
+    <div class="mobile-card" style="border:1px solid white; border-radius:10px; padding:10px; margin-bottom:15px;">
+      <div class="row">
+        <!-- Kolom Kiri -->
+        <div class="col-6">
+          <div class="row mb-2">
+            <div class="col-4"><strong>Nama:</strong></div>
+            <div class="col-8">
+              <span class="badge bg-primary">{{ $approved->name }}</span>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4"><strong>NISN:</strong></div>
+            <div class="col-8">
+              <span class="badge bg-secondary">{{ $approved->nisn }}</span>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4"><strong>Kelas:</strong></div>
+            <div class="col-8">
+              <span class="badge bg-info">{{ $approved->kelas }}</span>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4"><strong>Tanggal:</strong></div>
+            <div class="col-8">
+              <span class="badge bg-light">
+                {{ \Carbon\Carbon::parse($approved->tanggal_acara)->format('d/m/Y') }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- Kolom Kanan -->
+        <div class="col-6">
+          <div class="row mb-2">
+            <div class="col-6"><strong>Jumlah Pembayaran:</strong></div>
+            <div class="col-6">
+              <span class="badge bg-success">
+                Rp.{{ number_format($approved->jumlah_bayar, 0, ',', '.') }}
+              </span>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6"><strong>Total Masuk:</strong></div>
+            <div class="col-6">
+              <span class="badge bg-warning">
+                Rp.{{ number_format($approved->total_masuk, 0, ',', '.') }}
+              </span>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6"><strong>Total Tagihan:</strong></div>
+            <div class="col-6">
+              <span class="badge bg-danger">
+                Rp.{{ number_format($approved->tagihan, 0, ',', '.') }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Baris Bukti -->
+      <div class="row mb-2">
+        <div class="col-12">
+          <strong>Bukti:</strong>
+          @if ($approved->tipe_pembayaran === 'cash')
+            <span class="badge bg-success">Pembayaran Cash <br>(Tidak Perlu Memberikan Bukti)</span>
+          @else
             <a href="#"
-            data-bs-toggle="modal"
-            data-bs-target="#imageModal"
-            data-image="{{ asset('uploads/transfer/' . $approved->image) }}">
-            <img src="{{ asset('uploads/transfer/' . $approved->image) }}" alt="Bukti Pembayaran" style="width:100px">
+               data-bs-toggle="modal"
+               data-bs-target="#imageModal"
+               data-image="{{ asset('uploads/transfer/' . $approved->image) }}">
+              <img src="{{ asset('uploads/transfer/' . $approved->image) }}" alt="Bukti Pembayaran" style="width:100px">
             </a>
-            @endif
-          </p>
-          <div class="mt-2">
-            <!-- Tombol Approve -->
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModalMobile{{ $approved->id }}">
-              <i class="fas fa-check"></i> Approve
-            </button>
-            <!-- Tombol Reject -->
-            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModalMobile{{ $approved->id }}">
-              <i class="fas fa-times"></i> Reject
-            </button>
-          </div>
+          @endif
         </div>
-
-        <!-- Modal Approve Mobile -->
-        <div class="modal fade" id="approveModalMobile{{ $approved->id }}" tabindex="-1" aria-labelledby="approveModalLabelMobile{{ $approved->id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
-              <div class="modal-header">
-                <h5 class="modal-title" id="approveModalLabelMobile{{ $approved->id }}">Setujui Pembayaran?</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Apakah Anda yakin ingin menyetujui pembayaran dari <strong>{{ $approved->name }}</strong>?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form action="{{ route('approved.process', $approved->id) }}" method="POST" style="display: inline;">
-                  @csrf
-                  <button type="submit" class="btn btn-success">Ya, Setujui</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal Reject Mobile -->
-        <div class="modal fade" id="rejectModalMobile{{ $approved->id }}" tabindex="-1" aria-labelledby="rejectModalLabelMobile{{ $approved->id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white">
-              <div class="modal-header">
-                <h5 class="modal-title" id="rejectModalLabelMobile{{ $approved->id }}">Tolak Pembayaran</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Apakah Anda yakin ingin menolak pembayaran dan menghapus data dari <strong>{{ $approved->name }}</strong>?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form action="{{ route('approved.reject', $approved->id) }}" method="POST" style="display: inline;">
-                  @csrf
-                  <button type="submit" class="btn btn-danger">Ya, Tolak</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      @empty
-        <div class="mobile-card">
-          Data tidak ditemukan.
-        </div>
-      @endforelse
+      </div>
+      <!-- Tombol Aksi -->
+      <div class="mt-2">
+        <!-- Tombol Approve -->
+        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModalMobile{{ $approved->id }}">
+          <i class="fas fa-check"></i> Approve
+        </button>
+        <!-- Tombol Reject -->
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModalMobile{{ $approved->id }}">
+          <i class="fas fa-times"></i> Reject
+        </button>
+      </div>
     </div>
-  </div>
+
+    <!-- Modal Approve Mobile -->
+    <div class="modal fade" id="approveModalMobile{{ $approved->id }}" tabindex="-1" aria-labelledby="approveModalLabelMobile{{ $approved->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="approveModalLabelMobile{{ $approved->id }}">Setujui Pembayaran?</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Apakah Anda yakin ingin menyetujui pembayaran dari <strong>{{ $approved->name }}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <form action="{{ route('approved.process', $approved->id) }}" method="POST" style="display: inline;">
+              @csrf
+              <button type="submit" class="btn btn-success">Ya, Setujui</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Reject Mobile -->
+    <div class="modal fade" id="rejectModalMobile{{ $approved->id }}" tabindex="-1" aria-labelledby="rejectModalLabelMobile{{ $approved->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rejectModalLabelMobile{{ $approved->id }}">Tolak Pembayaran</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Apakah Anda yakin ingin menolak pembayaran dan menghapus data dari <strong>{{ $approved->name }}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <form action="{{ route('approved.reject', $approved->id) }}" method="POST" style="display: inline;">
+              @csrf
+              <button type="submit" class="btn btn-danger">Ya, Tolak</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  @empty
+    <div class="mobile-card">
+      Data tidak ditemukan.
+    </div>
+  @endforelse
+</div>
+
 
 
 <script>

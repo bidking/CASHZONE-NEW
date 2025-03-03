@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Siswa;
+use App\Models\Approved;
 use App\Models\Tabungan;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,53 +19,49 @@ class SiswaController extends Controller
         // Ambil data siswa yang sedang login
         $status = session('status');
         $user   = session('user');
-
+    
         if (!$user) {
             return redirect('/')->withErrors(['error' => 'Silakan login terlebih dahulu.']);
         }
-
-        // Tetapkan $siswa dari $user
+    
         $siswa = $user;
-
-        // Mulai query tabungan berdasarkan nama siswa
+    
+        // Query tabungan seperti yang sudah ada
         $query = Tabungan::where('name', $siswa->name);
-
-        // Filter berdasarkan tanggal jika parameter 'start_date' dan 'end_date' diisi
+    
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = $request->input('start_date');
             $endDate   = $request->input('end_date');
             $query->whereBetween('updated_at', [$startDate, $endDate]);
         }
-
-        // Hitung total pemasukan dari seluruh data yang sesuai dengan filter
+    
         $totalPemasukanAll = $query->sum('total_masuk');
-
-        // Untuk pagination, kita clone query agar operasi sum tidak mengganggu query pagination
         $queryForPaginate = clone $query;
-
-        // Pagination: ambil jumlah data per halaman, default 5, menggunakan parameter perPage
         $perPage   = $request->input('perPage', 5);
         $tabungans = $queryForPaginate->orderBy('created_at', 'asc')->paginate($perPage);
-
-        // Ambil data tabungan terbaru untuk keperluan lain (jika diperlukan)
+    
         $latestTabungan = Tabungan::where('name', $siswa->name)
             ->orderBy('created_at', 'desc')
             ->first();
-
-        // Hitung total tagihan (misalnya diambil dari data tabungan terakhir)
+    
         $totalTagihan = $siswa->lastTabungan->jumlah_bayar ?? 0;
         $statusPembayaran = ($totalPemasukanAll >= $totalTagihan) ? 'Lunas' : 'Belum Lunas';
-
-        // Pastikan parameter filter dan pagination tetap terlampir saat berpindah halaman
+    
         $tabungans->appends($request->all());
-
+    
+        // Tambahkan query untuk mengambil data pembayaran yang menunggu persetujuan
+        $approvedPayments = \DB::table('approved')
+        ->where('name', $siswa->name)
+        ->get();
+    
         return view('siswa.dashboard', compact(
             'siswa', 
             'tabungans', 
             'totalTagihan', 
-            'totalPemasukanAll',  // Gunakan variabel ini di view untuk menampilkan total pemasukan keseluruhan
+            'totalPemasukanAll',  
             'statusPembayaran',
-            'latestTabungan'
+            'latestTabungan',
+            'approvedPayments' // Kirimkan data ke view
         ));
     }
 
@@ -79,7 +76,7 @@ class SiswaController extends Controller
             'namaLengkap' => 'required',
             'kelas'       => 'required',
             'walas'       => 'required',
-            'gander'      => 'required|in:Laki-laki,Perempuan',
+            'gander'      => 'required|in:male,female',
             'no_telpon'   => 'nullable|string'
         ]);
 

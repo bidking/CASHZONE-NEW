@@ -43,5 +43,8 @@ public function lastTabungan()
 {
     return $this->hasOne(Tabungan::class, 'name', 'name')->latestOfMany();
 }
-
+public function tabungans()
+{
+    return $this->hasMany(Tabungan::class);
+}
 }
